@@ -3,27 +3,149 @@ title: "Brown_L1"
 output: html_document
 date: "2025-07-14"
 ---
+This is my work for the student activity in Lesson 1
+#Load package
+library(arrow)
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+---
 
-## R Markdown
+#Load data
+merged_data <- read_parquet(file = "merged_data.parquet", stringsAsFactors = TRUE)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+---
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#Exploring the Data
 
-```{r cars}
-summary(cars)
-```
+# show the first 6 rows, 10 first columns
+head(merged_data[, 1:10], 6) 
 
-## Including Plots
+# show the last 6 rows, 10 first columns
+tail(merged_data[, 1:10], 6) 
 
-You can also embed plots, for example:
+# show structure and variable types, first 10 columns
+str(merged_data[, 1:10]) 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+---
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#Cleaning Data
+
+# this might drop all values
+merged_data <- na.omit(merged_data)
+
+---
+
+#Load data
+merged_data <- read_parquet(file = "merged_data.parquet", stringsAsFactors = TRUE)
+
+---
+
+#Subsetting Data
+
+# this does not change the original data; it creates a new object with just AZ data.
+subset_data_az <- subset(merged_data, STATE_ABBR_2010SVI == "AZ") 
+
+--- 
+
+#Summarize Data
+summary(subset_data_az[, 1:10], 6)
+
+upward_mean_2010_az <- mean(subset_data_az$upward_mobility_rate_2010)
+
+upward_sd_2010_az <- sd(subset_data_az$upward_mobility_rate_2010)
+
+upward_mean_2020_az <- mean(subset_data_az$upward_mobility_rate_2020)
+
+upward_sd_2020_az <- sd(subset_data_az$upward_mobility_rate_2020)
+
+print(upward_mean_2010_az)
+print(upward_sd_2010_az)
+print(upward_mean_2020_az)
+print(upward_sd_2020_az)
+
+---
+
+#Same aquisition of data for California
+
+subset_data_ca <- subset(merged_data, STATE_ABBR_2010SVI == "CA")
+print (upward_mean_2010_ca <-mean(subset_data_ca$upward_mobility_rate_2010))
+
+print(upward_sd_2010_ca <- sd(subset_data_ca$upward_mobility_rate_2010))
+
+print(upward_mean_2020_ca <- mean(subset_data_ca$upward_mobility_rate_2020))
+
+print(upward_sd_2020_ca <- sd(subset_data_ca$upward_mobility_rate_2020))
+
+---
+
+#County-Level Summary
+
+print(pima_upward_mean_2010_az <- mean(subset_data_az$upward_mobility_rate_2010[subset_data_az$COUNTY_2010SVI == "Pima County"]))
+
+print(pima_upward_sd_2010_az <- sd(subset_data_az$upward_mobility_rate_2010[subset_data_az$COUNTY_2010SVI == "Pima County"]))
+
+# repeat for Del Norte
+print(delnorte_upward_mean_2010_ca <- mean(subset_data_ca$upward_mobility_rate_2010[subset_data_ca$COUNTY_2010SVI == "Del Norte County"]))
+
+print(delnorte_upward_sd_2010_ca <- sd(subset_data_ca$upward_mobility_rate_2010[subset_data_ca$COUNTY_2010SVI == "Del Norte County"]))
+
+---
+
+# Summary Stats Using dplyr
+
+install.packages("dplyr")
+library(dplyr)
+
+#summarize upward mobility by county in AZ
+summary_stats_upward_2010 <- subset_data_az %>%
+  group_by(COUNTY_2010SVI) %>%
+  summarize(mean_mobility_2010_az = mean(upward_mobility_rate_2010),
+            sd_mobility_2010_az = sd(upward_mobility_rate_2010))
+
+#view data
+(head(summary_stats_upward_2010))
+
+---
+
+#Visualization with ggplot2
+
+install.packages("ggplot2")
+library(ggplot2)
+
+#create a boxplot to visualize data
+mobility_plot <- ggplot(data = summary_stats_upward_2010,
+                        mapping = aes(x= COUNTY_2010SVI, y=mean_mobility_2010_az)) +
+  geom_boxplot()
+print(mobility_plot)
+
+---
+
+#State and County Summary
+
+#summary of every county in every state
+summary_stats_upward_2010_all <- merged_data %>%
+  group_by(STATE_ABBR_2010SVI, COUNTY_2010SVI) %>%
+  summarize(mean_mobility_2010 = mean(upward_mobility_rate_2010),
+            sd_mobility_2010 = sd(upward_mobility_rate_2010))
+            
+#creating a boxplot for this data now grouped by state
+mobility_plot <- ggplot(data = summary_stats_upward_2010_all,
+                        mapping = aes(x = STATE_ABBR_2010SVI, y = mean_mobility_2010)) +
+  geom_boxplot()
+print(mobility_plot)
+
+#remove missing states
+summary_stats_upward_2010_all <- summary_stats_upward_2010_all[!is.na(summary_stats_upward_2010_all$STATE_ABBR_2010SVI),]
+
+# now make a boxplot
+mobility_plot <- ggplot(data = summary_stats_upward_2010_all,
+                        mapping = aes(x= STATE_ABBR_2010SVI, y=mean_mobility_2010,
+                                      fill = STATE_ABBR_2010SVI)) +
+  geom_boxplot()
+print(mobility_plot)
+
+---
+
+#Save Plot
+
+ggsave(plot = mobility_plot, filename = "output/mobility-plot-2010.pdf")
+
