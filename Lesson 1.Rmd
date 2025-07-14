@@ -63,7 +63,7 @@ setwd("path/to/your/folder")
 For example:
 
 ```r
-setwd("C:/Users/jdmic/git/equityag_materials")
+setwd("/Users/mr.brown/Downloads/Equity Ag/GitHub Folder/equityag_materials")
 ```
 
 Next, let’s create some folders to organize your files. A good file organization is essential for reproducibility and workflow.
