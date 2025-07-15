@@ -171,21 +171,19 @@ lake_county_data <- subset_data_ca %>%
 
 #Boxplot for 2010
 boxplot_2010 <- ggplot(data = lake_county_data, 
-                       mapping = aes(y = upward_mobility_rate_2010)) +
-  geom_boxplot(fill = "lightblue") +
-  labs(title = "Upward Mobility Rate in Lake County (2010)",
-       y = "Upward Mobility Rate") +
-  theme_minimal()
-
-print(boxplot_2010)
+                       mapping = aes(y = upward_mobility_rate_2010)) + 
+                       geom_boxplot(fill = "lightblue") +
+                       labs(title = "Upward Mobility Rate in Lake County (2010)", 
+                       y = "Upward Mobility Rate") + 
+                       theme_minimal() print(boxplot_2010)
 
 # Boxplot for 2020
 boxplot_2020 <- ggplot(data = lake_county_data, 
                        mapping = aes(y = upward_mobility_rate_2020)) +
-  geom_boxplot(fill = "lightgreen") +
-  labs(title = "Upward Mobility Rate in Lake County (2020)",
-       y = "Upward Mobility Rate") +
-  theme_minimal()
+                       geom_boxplot(fill = "lightgreen") +
+                       labs(title = "Upward Mobility Rate in Lake County (2020)",
+                       y = "Upward Mobility Rate") +
+                       theme_minimal()
 
 print(boxplot_2020)
 
