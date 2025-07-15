@@ -173,15 +173,17 @@ lake_county_data <- subset_data_ca %>%
 boxplot_2010 <- ggplot(data = lake_county_data, 
                        mapping = aes(y = upward_mobility_rate_2010)) + 
                        geom_boxplot(fill = "lightblue") +
-                       labs(title = "Upward Mobility Rate in Lake County (2010)", 
+                       labs(title = "Upward Mobility Rate in Lake County (2010)", x = "Lake County",
                        y = "Upward Mobility Rate") + 
-                       theme_minimal() print(boxplot_2010)
+                       theme_minimal() 
+                       
+print(boxplot_2010)
 
 # Boxplot for 2020
 boxplot_2020 <- ggplot(data = lake_county_data, 
                        mapping = aes(y = upward_mobility_rate_2020)) +
                        geom_boxplot(fill = "lightgreen") +
-                       labs(title = "Upward Mobility Rate in Lake County (2020)",
+                       labs(title = "Upward Mobility Rate in Lake County (2020)", x = "Lake County",
                        y = "Upward Mobility Rate") +
                        theme_minimal()
 
@@ -199,31 +201,26 @@ library(dplyr)
 high_mobility_ca <- subset_data_ca %>%
   filter(upward_mobility_rate_2010 > 1)
 
-# Count the number of rows meeting the condition
-num_rows <- nrow(high_mobility_ca)
-print(paste("Number of rows with mobility rate > 1 in 2010:", num_rows))
-
-# Count occurrences by county
-county_counts <- high_mobility_ca %>%
-  count(COUNTY_2010SVI, sort = TRUE)
-
-print(county_counts)
+#County means
+county_means <- high_mobility_ca %>%
+  group_by(COUNTY_2010SVI) %>%
+  summarise(mean_mobility = mean(upward_mobility_rate_2010, na.rm = TRUE)) %>%
+  arrange(desc(mean_mobility))
 
 ---
 
 # Filter mobility plot 2010
 
-library(ggplot2)
-
-ggplot(county_counts, aes(x = reorder(COUNTY_2010SVI, -n), y = n)) +
-  geom_col(fill = "steelblue") +
+ggplot(county_means, aes(x = reorder(COUNTY_2010SVI, -mean_mobility), y = mean_mobility)) +
+  geom_col(fill = "darkgreen") +
   labs(
-    title = "Counties with Upward Mobility Rate > 1 (2010)",
+    title = "Mean Upward Mobility Rate by County (2010, Rate > 1)",
     x = "County",
-    y = "Number of Tracts"
+    y = "Mean Upward Mobility Rate"
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 # Save the plot
 write_parquet(high_mobility_ca, "output/high_mobility_ca_2010.parquet")
