@@ -149,3 +149,120 @@ print(mobility_plot)
 
 ggsave(plot = mobility_plot, filename = "output/mobility-plot-2010.pdf")
 
+---
+
+# Student Activity
+
+# 1. Explore a different county from AZ or CA
+
+# List counties in California
+table(subset_data_ca$COUNTY_2010SVI)
+
+#I chose lake county for the assignment, here's the mean and standard deviation for upward mobility
+print(lake_upward_mean_2010_ca <- mean(subset_data_ca$upward_mobility_rate_2010[subset_data_ca$COUNTY_2010SVI == "Lake County"]))
+
+print(lake_upward_sd_2010_ca <- sd(subset_data_ca$upward_mobility_rate_2010[subset_data_ca$COUNTY_2010SVI == "Lake County"]))
+
+---
+
+# Boxplot for Selected County
+lake_county_data <- subset_data_ca %>%
+  filter(COUNTY_2010SVI == "Lake County")
+
+#Boxplot for 2010
+boxplot_2010 <- ggplot(data = lake_county_data, 
+                       mapping = aes(y = upward_mobility_rate_2010)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Upward Mobility Rate in Lake County (2010)",
+       y = "Upward Mobility Rate") +
+  theme_minimal()
+
+print(boxplot_2010)
+
+# Boxplot for 2020
+boxplot_2020 <- ggplot(data = lake_county_data, 
+                       mapping = aes(y = upward_mobility_rate_2020)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(title = "Upward Mobility Rate in Lake County (2020)",
+       y = "Upward Mobility Rate") +
+  theme_minimal()
+
+print(boxplot_2020)
+
+# Save the plots
+ggsave(plot = boxplot_2010, filename = "output/lake_county_mobility_2010.png", width = 7, height = 5)
+ggsave(plot = boxplot_2020, filename = "output/lake_county_mobility_2020.png", width = 7, height = 5)
+
+---
+
+library(dplyr)
+
+# Filter for upward_mobility_rate_2010 > 1
+high_mobility_ca <- subset_data_ca %>%
+  filter(upward_mobility_rate_2010 > 1)
+
+# Count the number of rows meeting the condition
+num_rows <- nrow(high_mobility_ca)
+print(paste("Number of rows with mobility rate > 1 in 2010:", num_rows))
+
+# Count occurrences by county
+county_counts <- high_mobility_ca %>%
+  count(COUNTY_2010SVI, sort = TRUE)
+
+print(county_counts)
+
+---
+
+# Filter mobility plot 2010
+
+library(ggplot2)
+
+ggplot(county_counts, aes(x = reorder(COUNTY_2010SVI, -n), y = n)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Counties with Upward Mobility Rate > 1 (2010)",
+    x = "County",
+    y = "Number of Tracts"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Save the plot
+write_parquet(high_mobility_ca, "output/high_mobility_ca_2010.parquet")
+
+---
+
+#Filter mobility plot for 2020 
+
+library(dplyr)
+library(arrow)
+
+# Filter for upward_mobility_rate_2020 > 1
+high_mobility_ca_2020 <- subset_data_ca %>%
+  filter(upward_mobility_rate_2020 > 1)
+
+# Count rows meeting the condition
+num_rows_2020 <- nrow(high_mobility_ca_2020)
+print(paste("Number of rows with mobility rate > 1 in 2020:", num_rows_2020))
+
+# Count occurrences by county
+county_counts_2020 <- high_mobility_ca_2020 %>%
+  count(COUNTY_2010SVI, sort = TRUE)
+
+print(county_counts_2020)
+
+# Bar plot 2020
+library(ggplot2)
+
+ggplot(county_counts_2020, aes(x = reorder(COUNTY_2010SVI, -n), y = n)) +
+  geom_col(fill = "darkorange") +
+  labs(
+    title = "Counties with Upward Mobility Rate > 1 (2020)",
+    x = "County",
+    y = "Number of Tracts"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+#Save the plot
+  write_parquet(high_mobility_ca_2020, "output/high_mobility_ca_2020.parquet")
