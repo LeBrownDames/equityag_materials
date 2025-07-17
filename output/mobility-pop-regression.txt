@@ -1,0 +1,20 @@
+
+Call:
+lm(formula = upward_mobility_rate_2010 ~ logpop, data = merged)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.6162 -0.5321 -0.3121  0.1615 24.2319 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.81485    0.15953  -11.38   <2e-16 ***
+logpop       1.04174    0.06084   17.12   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.091 on 9542 degrees of freedom
+  (54 observations deleted due to missingness)
+Multiple R-squared:  0.02981,	Adjusted R-squared:  0.02971 
+F-statistic: 293.2 on 1 and 9542 DF,  p-value: < 2.2e-16
+

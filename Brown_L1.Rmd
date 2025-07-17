@@ -3,7 +3,8 @@ title: "Brown_L1"
 output: html_document
 date: "2025-07-14"
 ---
-This is my work for the student activity in Lesson 1
+#This is my work for the student activity in Lesson 1
+
 #Load package
 library(arrow)
 
@@ -201,7 +202,7 @@ library(dplyr)
 high_mobility_ca <- subset_data_ca %>%
   filter(upward_mobility_rate_2010 > 1)
 
-#County means
+#County means 2010
 county_means <- high_mobility_ca %>%
   group_by(COUNTY_2010SVI) %>%
   summarise(mean_mobility = mean(upward_mobility_rate_2010, na.rm = TRUE)) %>%
@@ -236,28 +237,23 @@ library(arrow)
 high_mobility_ca_2020 <- subset_data_ca %>%
   filter(upward_mobility_rate_2020 > 1)
 
-# Count rows meeting the condition
-num_rows_2020 <- nrow(high_mobility_ca_2020)
-print(paste("Number of rows with mobility rate > 1 in 2020:", num_rows_2020))
+# County means 2020 
+county_means <- high_mobility_ca %>%
+  group_by(COUNTY_2020SVI) %>%
+  summarise(mean_mobility = mean(upward_mobility_rate_2020, na.rm = TRUE)) %>%
+  arrange(desc(mean_mobility))
 
-# Count occurrences by county
-county_counts_2020 <- high_mobility_ca_2020 %>%
-  count(COUNTY_2010SVI, sort = TRUE)
-
-print(county_counts_2020)
-
-# Bar plot 2020
-library(ggplot2)
-
-ggplot(county_counts_2020, aes(x = reorder(COUNTY_2010SVI, -n), y = n)) +
-  geom_col(fill = "darkorange") +
+# Filter Mobility Plot 2020
+ggplot(county_means, aes(x = reorder(COUNTY_2020SVI, -mean_mobility), y = mean_mobility)) +
+  geom_col(fill = "darkgreen") +
   labs(
-    title = "Counties with Upward Mobility Rate > 1 (2020)",
+    title = "Mean Upward Mobility Rate by County (2020, Rate > 1)",
     x = "County",
-    y = "Number of Tracts"
+    y = "Mean Upward Mobility Rate"
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-#Save the plot
-  write_parquet(high_mobility_ca_2020, "output/high_mobility_ca_2020.parquet")
+
+
+# Save the plot
+write_parquet(high_mobility_ca, "output/high_mobility_ca_2020.parquet")
