@@ -11,7 +11,7 @@ Coefficients:
 (Intercept) -1.81485    0.15953  -11.38   <2e-16 ***
 logpop       1.04174    0.06084   17.12   <2e-16 ***
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 1.091 on 9542 degrees of freedom
   (54 observations deleted due to missingness)

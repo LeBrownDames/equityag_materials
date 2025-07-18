@@ -247,3 +247,82 @@ plot(x = merged$upward_mobility_rate_2010,
      y = merged$logpop, 
      xlab = "Upward Mobility", 
      ylab = "log10(Population)")
+
+# Run a regression
+mobility_v_pop <- lm(upward_mobility_rate_2010 ~ logpop, data = merged)
+
+# The results
+summary(mobility_v_pop)
+
+# Save regression results
+sink(file = "output/mobility-pop-regression.txt")
+summary(mobility_v_pop)
+sink()
+
+
+## Multivarite Regression: Let's add state
+
+# Dummy variable to compare arizona to california in effort to link mobility rates to one state
+merged$az <- ifelse(merged$STATE_NAME_2010SVI == "Arizona", 1, 0)
+merged$ca <- ifelse(merged$STATE_NAME_2010SVI == "California", 1, 0)
+
+# Add az as a predictor and run the new model
+mobility_v_pop_state <- lm(formula = upward_mobility_rate_2010 ~ logpop + az
+                           , data = merged)
+summary(mobility_v_pop_state)
+
+# Save the results
+sink(file = "output/mobility-pop-state-regression.txt")
+summary(mobility_v_pop)
+sink()
+
+
+## Student Activity!
+
+# Part 1. Variable exploration
+boxplot(formula = E_UNEMP_2010SVI ~ STATE_NAME_2010SVI, data = merged_data)
+
+## Part 1 Questions
+  # 1. What did this graph show? - It shows the unemployment rates by county in Arizona and California
+  #  2. Why did you choose this variable? - Because I was curious to see how unemployment rates would differ between the two staets
+
+
+## Part 2. ANOVA: Multiple Group Comparisons - analysis of variance, comparing multiple groups at once
+aov(formula = E_UNEMP_2010SVI ~ COUNTY_2010SVI, data = az)
+
+# Mobility rate explained by county
+unemp_rate_az_aov <- aov(formula = E_UNEMP_2010SVI ~ COUNTY_2010SVI, data = az)
+
+# looking at explaination
+summary(object = unemp_rate_az_aov)
+
+## Part 2 Questions
+  # 1. What did you find in the analysis? - I found, given that p=2.2e-06, that there is in fact a high indication that unemployment rates differ significantly across counties
+
+
+## Part 3. Another Regression
+
+# 2020 data and more
+aov(formula = upward_mobility_rate_2020 + E_UNEMP_2010SVI ~ COUNTY_2010SVI, data = az)
+
+# Mobility rate explained by county
+mobility_unemp_rate_az_aov <- aov(formula = upward_mobility_rate_2020 + E_UNEMP_2010SVI ~ COUNTY_2010SVI, data = az)
+
+# looking at explaination
+summary(object = mobility_unemp_rate_az_aov)
+
+# How much variation is due to county level differences
+eta_sq <- 470918 / (470918 + 13300615)
+print(eta_sq)
+
+
+## Part 4. Reflect and Extend
+  # I feel like I need more time to practice and explore the functions that create regressions to be able to replicate this excercise in a research setting.
+  # The energy and support from the internship has been great. So has ChatGPT
+  # I could use more explanations of some functions to be able to really understand some of what I wrote, but for the most part, I was following along quite well.
+
+
+
+
+  
+
