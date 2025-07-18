@@ -166,7 +166,7 @@ print(lake_upward_sd_2010_ca <- sd(subset_data_ca$upward_mobility_rate_2010[subs
 
 ---
 
-# Boxplot for Selected County
+# 2. Boxplot for Selected County
 lake_county_data <- subset_data_ca %>%
   filter(COUNTY_2010SVI == "Lake County")
 
@@ -196,7 +196,7 @@ ggsave(plot = boxplot_2020, filename = "output/lake_county_mobility_2020.png", w
 
 ---
 
-library(dplyr)
+# 3. Filter Challenge
 
 # Filter for upward_mobility_rate_2010 > 1
 high_mobility_ca <- subset_data_ca %>%
@@ -257,3 +257,10 @@ ggplot(county_means, aes(x = reorder(COUNTY_2020SVI, -mean_mobility), y = mean_m
 
 # Save the plot
 write_parquet(high_mobility_ca, "output/high_mobility_ca_2020.parquet")
+
+---
+
+
+# 4. Reflect and Extend
+# a. I would ask the question, is upward mobility related to education?
+# b. As of now, I have no questions
